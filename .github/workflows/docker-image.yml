@@ -23,12 +23,19 @@ jobs:
         docker save -o anki-sync-server.tar anki-sync-server:$(date +%s)
 
     - name: Create GitHub Release
-      id: create_release
-      uses: ghena/release-action@v1
+      uses: actions/github-script@v6
       with:
-        tag_name: v1.0.0
-        release_name: "Release v1.0.0"
-        body: "Docker image release"
+        script: |
+          const { data: release } = await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: 'v1.0.0',  # 可以根据需要更新版本号
+            name: 'Release v1.0.0',
+            body: 'Docker image release',
+            draft: false,
+            prerelease: false
+          });
+          return release;
 
     - name: Upload tar file to GitHub Release
       uses: softprops/action-gh-release@v1
