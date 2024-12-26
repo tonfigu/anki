@@ -16,11 +16,17 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build -f docs/syncserver/Dockerfile --no-cache --build-arg ANKI_VERSION=release -t anki-sync-server:$(date +%s) .
+        IMAGE_TAG="anki-sync-server:$(date +%s)"
+        docker build -f docs/syncserver/Dockerfile --no-cache --build-arg ANKI_VERSION=release -t $IMAGE_TAG .
+        echo "Built image: $IMAGE_TAG"
+
+    - name: List Docker images
+      run: docker images
 
     - name: Export Docker image as tar file
       run: |
-        docker save -o anki-sync-server.tar anki-sync-server:$(date +%s)
+        IMAGE_TAG="anki-sync-server:$(date +%s)"
+        docker save -o anki-sync-server.tar $IMAGE_TAG
 
     - name: Create GitHub Release
       uses: actions/github-script@v6
@@ -29,8 +35,8 @@ jobs:
           const { data: release } = await github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            tag_name: 'v1.0.0',  # 可以根据需要更新版本号
-            name: 'Release v1.0.0',
+            tag_name: 'v1.0.0',
+            release_name: 'Release v1.0.0',
             body: 'Docker image release',
             draft: false,
             prerelease: false
