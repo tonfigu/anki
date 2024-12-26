@@ -16,7 +16,7 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        IMAGE_TAG="anki-sync-server:$(date +%s)"
+        IMAGE_TAG="anki-sync-server:latest"
         docker build -f docs/syncserver/Dockerfile --no-cache --build-arg ANKI_VERSION=release -t $IMAGE_TAG .
         echo "Built image: $IMAGE_TAG"
 
@@ -25,8 +25,9 @@ jobs:
 
     - name: Export Docker image as tar file
       run: |
-        IMAGE_TAG="anki-sync-server:$(date +%s)"
+        IMAGE_TAG="anki-sync-server:latest"
         docker save -o anki-sync-server.tar $IMAGE_TAG
+        echo "Saved image as anki-sync-server.tar"
 
     - name: Create GitHub Release
       uses: actions/github-script@v6
